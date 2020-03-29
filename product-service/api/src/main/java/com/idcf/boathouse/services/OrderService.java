@@ -118,7 +118,9 @@ public class OrderService {
         //复制字段信息
         BeanUtils.copyProperties(orderCreateVo, order);
         order.setCreateTime(new Date());
-        order.setOrderStatus(OrderStatusEnum.OrderWaitPay.getValue());
+        // 目前下单没有支付环节，直接设置为已支付才能将后台的操作连通起来，后续需要支付再设置回来
+//        order.setOrderStatus(OrderStatusEnum.OrderWaitPay.getValue());
+        order.setOrderStatus(OrderStatusEnum.OrderWaitHandle.getValue());
         order.setUpdateTime(new Date());
         String id = generateOrderId();
         order.setOrderId(id);
@@ -181,5 +183,18 @@ public class OrderService {
         //序号补全0组成8位数组后和日期拼接，格式举例2020031800000023
         String id = String.format("%s%08d", today, count + 1L);
         return id;
+    }
+
+    /**
+     * 根据订单状态查询订单列表
+     *
+     * @param status
+     * @param pageIndex
+     * @param pageSize
+     * @return
+     */
+    public List<OrderVo> findOrdersByStatus(Integer userId, Integer status, Integer pageIndex, Integer pageSize) {
+        List<OrderVo> list = new ArrayList<>();
+        return list;
     }
 }
