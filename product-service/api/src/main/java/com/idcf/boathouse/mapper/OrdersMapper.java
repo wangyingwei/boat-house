@@ -31,4 +31,10 @@ public interface OrdersMapper extends BaseMapper<Orders> {
 
     @Select("select count(1) from idcf_orders where to_days((create_time)) = to_days(now()) ")
     Long getOrderCountToday();
+
+    @Select("select * from idcf_orders where user_id=#{userId}  order by update_time desc limit #{limited} offset #{offset}")
+    List<Orders> findOrdersByUser(@Param("userId") Long userId ,@Param("offset") int offset, @Param("limited") int limited);
+
+    @Select("select * from idcf_orders where user_id=#{userId} and order_status=#{orderStatus}  order by update_time desc limit #{limited} offset #{offset}")
+    List<Orders> findOrdersByUserStatus(@Param("userId") Long userId ,@Param("orderStatus") int orderStatus,@Param("offset") int offset, @Param("limited") int limited);
 }

@@ -28,7 +28,7 @@ public class JdbcUtils {
     public JdbcUtils() {
         try {
         Properties pro = new Properties();
-        InputStream resourceProperty=this.getClass().getResourceAsStream("/application.properties");
+        InputStream resourceProperty=this.getClass().getResourceAsStream("/application.yml");
         pro.load(resourceProperty);
         String path="";
         String profile= SpringContextHolder.getActiveProfile();

@@ -91,5 +91,8 @@ public class OrderServiceTest {
         //Assert.assertEquals(1, res);
     }
 
-
+    @Test
+    public void findOrdersByStatus() {
+        List<OrderVo> orders = orderService.findOrdersByStatus(1L, 1, 1, 20);
+    }
 }

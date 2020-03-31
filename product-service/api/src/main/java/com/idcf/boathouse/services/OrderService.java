@@ -50,29 +50,8 @@ public class OrderService {
      * @return
      */
     public List<OrderVo> findPendingOrders(int pageIndex, int pageSize) {
-        List<OrderVo> lstOrderVo = new ArrayList<>();
-
         List<Orders> ordersList = ordersMapper.findPendingOrders(pageIndex - 1, pageSize);
-        QueryWrapper<OrderItems> queryWrapper = new QueryWrapper<>();
-        for (Orders order : ordersList) {
-            OrderVo orderVo = new OrderVo();
-            BeanUtils.copyProperties(order, orderVo);
-            queryWrapper.clear();
-            queryWrapper.eq("order_id", order.getOrderId());
-            List<OrderItems> itemsList = orderItemsMapper.selectList(queryWrapper);
-            List<OrderItemsVo> lstOrderItemsVo = new ArrayList<>();
-            for (OrderItems orderItems : itemsList) {
-                OrderItemsVo orderItemsVo = new OrderItemsVo();
-                BeanUtils.copyProperties(orderItems, orderItemsVo);
-                lstOrderItemsVo.add(orderItemsVo);
-            }
-
-            orderVo.setItemsList(lstOrderItemsVo);
-            orderVo.setOrderStatusDesc(OrderConstant.getOrderDesc(order.getOrderStatus()));
-            orderVo.setOrderTime(DateUtils.formatTime(order.getCreateTime()));
-            orderVo.setUpdateTimeStr(DateUtils.formatTime(order.getUpdateTime()));
-            lstOrderVo.add(orderVo);
-        }
+        List<OrderVo> lstOrderVo = getOrderVoList(ordersList);
         return lstOrderVo;
     }
 
@@ -193,8 +172,41 @@ public class OrderService {
      * @param pageSize
      * @return
      */
-    public List<OrderVo> findOrdersByStatus(Integer userId, Integer status, Integer pageIndex, Integer pageSize) {
-        List<OrderVo> list = new ArrayList<>();
-        return list;
+    public List<OrderVo> findOrdersByStatus(Long userId, Integer status, Integer pageIndex, Integer pageSize) {
+        List<Orders> ordersList=new ArrayList<>();
+        if(status==null){
+            ordersList=ordersMapper.findOrdersByUser( userId,   pageIndex,  pageSize);
+       }
+       else {
+            ordersList=ordersMapper.findOrdersByUserStatus( userId,  status, pageIndex,  pageSize);
+       }
+        List<OrderVo> lstOrderVo = getOrderVoList(ordersList);
+        return lstOrderVo;
+    }
+
+    private  List<OrderVo>  getOrderVoList(List<Orders> ordersList){
+        List<OrderVo> lstOrderVo = new ArrayList<>();
+
+        QueryWrapper<OrderItems> queryWrapper = new QueryWrapper<>();
+        for (Orders order : ordersList) {
+            OrderVo orderVo = new OrderVo();
+            BeanUtils.copyProperties(order, orderVo);
+            queryWrapper.clear();
+            queryWrapper.eq("order_id", order.getOrderId());
+            List<OrderItems> itemsList = orderItemsMapper.selectList(queryWrapper);
+            List<OrderItemsVo> lstOrderItemsVo = new ArrayList<>();
+            for (OrderItems orderItems : itemsList) {
+                OrderItemsVo orderItemsVo = new OrderItemsVo();
+                BeanUtils.copyProperties(orderItems, orderItemsVo);
+                lstOrderItemsVo.add(orderItemsVo);
+            }
+
+            orderVo.setItemsList(lstOrderItemsVo);
+            orderVo.setOrderStatusDesc(OrderConstant.getOrderDesc(order.getOrderStatus()));
+            orderVo.setOrderTime(DateUtils.formatTime(order.getCreateTime()));
+            orderVo.setUpdateTimeStr(DateUtils.formatTime(order.getUpdateTime()));
+            lstOrderVo.add(orderVo);
+        }
+        return lstOrderVo;
     }
 }

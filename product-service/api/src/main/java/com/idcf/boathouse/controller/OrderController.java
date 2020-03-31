@@ -82,15 +82,15 @@ public class OrderController {
      *
      * @return
      */
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = {"/user","/{status}/user"}, method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
     @ResponseBody
-    @ApiOperation("客户根据订单状态查询订单列表,默认查询所有")
-    public List<OrderVo> getOrdersByStatus(@RequestParam(value = "status", required = false) Integer status,
+    @ApiOperation("客户根据订单状态查询当前登录用户的订单列表,默认查询所有")
+    public List<OrderVo> getOrdersByStatus(@PathVariable(required = false) Integer status,
                                            @Positive(message = "必须为大于0的正整数") @RequestParam(value = "index", defaultValue = "1") Integer pageIndex,
                                            @Positive(message = "必须为大于0的正整数") @RequestParam(value = "size", defaultValue = "20") Integer pageSize) {
         // 加入jwt token之后，前端需要调用接口account接口进行认证，如果认证通过会携带token在http的header中
         // 在header的token解析出user id,并存储在redis中或者是当前的context
-        int userId = 1; // TODO
+        Long userId = 1L; // TODO
         LOG.info(String.format("user_id=%s, status=%s, index=%s, size=%s", userId, status, pageIndex, pageSize));
         return orderService.findOrdersByStatus(userId, status, pageIndex, pageSize);
     }
