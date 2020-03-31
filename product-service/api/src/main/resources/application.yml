@@ -3,6 +3,8 @@ spring:
     #应用名称
     name: springboot-demo
   #jdbc 配置文件内容
+  profiles:
+    active: test
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://product-service-db:3306/BoatHouse?characterEncoding=utf-8
