@@ -7,12 +7,12 @@
         <div class="card" v-for="(order, index) in orders" :key="order.id">
           <div class="card-header" v-on:click="showOrderDetail(index)">
             <div class="row">
-              <div class="col-sm-6 order-name">{{order.name}}</div>
+              <div class="col-sm-6 order-name">{{order.displayName}}</div>
               <div class="col-sm-4 order-time">{{order.createTime}}</div>
               <div class="col-sm-2 order-status">{{order.orderStatusDesc}}</div>
             </div>
           </div>
-          <div class="order-detail collapse show" v-show="selectedOrder === order.id">
+          <div class="order-detail collapse show" v-show="selectedOrder === index">
             <div class="card-body">
               <ul class="list-group">
                 <li v-for="item in items" :key="item.id" class="list-group-item">
@@ -60,7 +60,7 @@ export default {
       return []
     },
     total () {
-      if (this.selectedOrder) {
+      if (this.selectedOrder >= 0) {
         return this.items.reduce((acc, item) => acc + item.foodPrice * item.foodNum, 0)
       }
     }
