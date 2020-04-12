@@ -3,30 +3,31 @@
     <div class="row">
       <div class="col-md-8 orders-wrapper">
         <div class="order-title">您的订单</div>
-        <div class="card" v-for="order in orders" :key="order.itemId">
-          <div class="card-header" v-on:click="showOrderDetail(order.itemId)">
+        <div class="order-empty" v-show="orders.length === 0">您还没有创建订单</div>
+        <div class="card" v-for="(order, index) in orders" :key="order.id">
+          <div class="card-header" v-on:click="showOrderDetail(index)">
             <div class="row">
               <div class="col-sm-6 order-name">{{order.name}}</div>
-              <div class="col-sm-4 order-time">2020-03-20 11:11:11</div>
-              <div class="col-sm-2 order-status">已支付</div>
+              <div class="col-sm-4 order-time">{{order.createTime}}</div>
+              <div class="col-sm-2 order-status">{{order.orderStatusDesc}}</div>
             </div>
           </div>
-          <div class="order-detail collapse show" v-show="selectedOrder === order.itemId">
+          <div class="order-detail collapse show" v-show="selectedOrder === order.id">
             <div class="card-body">
               <ul class="list-group">
-                <li v-for="item in items" :key="item.itemId" class="list-group-item">
+                <li v-for="item in items" :key="item.id" class="list-group-item">
                   <div class="row">
                     <div class="col-sm-3">
-                      <img :src="item.img" class="cooking-img" />
+                      <img :src="item.foodPicture" class="cooking-img" />
                     </div>
                     <div class="col-sm-5">
-                      <div class="cooking-name">{{item.name}}</div>
+                      <div class="cooking-name">{{item.foodName}}</div>
                     </div>
                     <div class="quota col-sm-1">
-                      x {{item.quota}}
+                      x {{item.foodNum}}
                     </div>
                     <div class="col-sm-3 price">
-                      ￥ {{formatMoney(item.price)}}
+                      ￥ {{formatMoney(item.foodPrice)}}
                     </div>
                   </div>
                 </li>
@@ -47,49 +48,56 @@
 export default {
   data () {
     return {
-      orders: [{
-        itemId: 1,
-        name: '蜂蜜烤猪肉 等5件',
-      }, {
-        itemId: 2,
-        name: '烤牛排 等2件',
-      }],
-      items: [{
-        itemId: 1,
-        name: '蜂蜜烤猪肉',
-        img: 'assets/img/product/boathouse01.png',
-        price: 8800,
-        quota: 1
-      }, {
-        itemId: 1,
-        name: '蜂蜜烤猪肉',
-        img: 'assets/img/product/boathouse01.png',
-        price: 8800,
-        quota: 1
-      }, {
-        itemId: 1,
-        name: '蜂蜜烤猪肉',
-        img: 'assets/img/product/boathouse01.png',
-        price: 8800,
-        quota: 1
-      }],
-      selectedOrder: 1
+      orders: [],
+      selectedOrder: -1
     }
   },
   computed: {
+    items () {
+      if (this.selectedOrder >= 0 && this.orders.length) {
+        return this.orders[this.selectedOrder].itemsList
+      }
+      return []
+    },
     total () {
-      return this.items.reduce((acc, item) => acc + item.price * item.quota, 0)
+      if (this.selectedOrder) {
+        return this.items.reduce((acc, item) => acc + item.foodPrice * item.foodNum, 0)
+      }
     }
   },
+  mounted () {
+    this.fetchOrder()
+  },
   methods: {
-    formatMoney (m) {
-      return Math.floor(m / 100).toFixed(2)
+    fetchOrder () {
+      this.axios.get('/api/orders/currentUser').then(result => {
+        if (result.status === 200) {
+          const data = result.data
+          this.orders = data.map(item => {
+            const foods = item.itemsList
+            if (foods.length) {
+              if (foods.length === 1) {
+                item.displayName = foods[0].foodName
+              } else {
+                item.displayName = foods[0].foodName + ' 等' + foods.length + '件'
+              }
+            }
+            return item
+          })
+        }
+      })
     },
-    showOrderDetail (id) {
-      if (this.selectedOrder === id) {
+    formatMoney (m) {
+      if (m) {
+        return m.toFixed(2)
+      }
+      return ''
+    },
+    showOrderDetail (index) {
+      if (this.selectedOrder === index) {
         this.selectedOrder = undefined
       } else {
-        this.selectedOrder = id
+        this.selectedOrder = index
       }
     }
   }
