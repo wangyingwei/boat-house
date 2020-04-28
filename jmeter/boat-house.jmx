@@ -10,7 +10,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="domain" elementType="Argument">
             <stringProp name="Argument.name">domain</stringProp>
-            <stringProp name="Argument.value">${__P(domain,13.92.227.124)}</stringProp>
+            <stringProp name="Argument.value">${__P(domain,23.100.26.219)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="port" elementType="Argument">
